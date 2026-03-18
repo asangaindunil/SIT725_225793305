@@ -1,0 +1,17 @@
+{
+  "name": "sit725-assignment-2",
+  "version": "1.0.0",
+  "description": "Practice Rest API",
+  "license": "ISC",
+  "author": "Asanga Indunil",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
+
