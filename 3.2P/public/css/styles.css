@@ -1,0 +1,46 @@
+body {
+    background: #f5f7fa;
+}
+
+.main-body {
+    margin-top: 40px;
+}
+
+.calculator-card {
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.button-group a {
+    margin: 8px;
+}
+
+.result-box {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.result-box h4 {
+    color: #00796b;
+    font-weight: bold;
+}
+
+.github-footer {
+    background: #263238;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+.github-footer h6 {
+    font-weight: 600;
+}
+
+.github-btn {
+    background: #24292e;
+}
+
+.github-btn:hover {
+    background: #000;
+}

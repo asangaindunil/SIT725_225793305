@@ -1,0 +1,16 @@
+{
+  "name": "3.2p",
+  "version": "1.0.0",
+  "description": "my first graphical app for sit725",
+  "license": "ISC",
+  "author": "Asanga Indunil",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
