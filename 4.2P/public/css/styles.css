@@ -1,0 +1,51 @@
+body {
+    background: #f5f7fa;
+}
+
+.main-body {
+    margin-top: 40px;
+}
+
+.button-group a {
+    margin: 8px;
+}
+
+.github-footer {
+    background: #263238;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+.github-footer h6 {
+    font-weight: 600;
+}
+
+.github-btn {
+    background: #24292e;
+}
+
+.github-btn:hover {
+    background: #000;
+}
+
+.product-card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.product-card img {
+    height: 250px;
+    object-fit: cover;
+}
+
+.price {
+    font-weight: bold;
+    color: #00796b;
+    margin-top: 10px;
+}
+
+.card-title {
+    background: rgba(0,0,0,0.6);
+    padding: 10px;
+    font-size: 18px;
+}
