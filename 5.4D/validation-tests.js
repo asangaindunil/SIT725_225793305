@@ -1,9 +1,31 @@
-const fetch = require('node-fetch');
+/**
+ * SIT725 – 5.4D Validation Tests (MANDATORY TEMPLATE)
+ *
+ * HOW TO RUN: (Node.js 18+ is required)
+ *   1. Start MongoDB
+ *   2. Start your server (npm start)
+ *   3. node validation-tests.js
+ *
+ * DO NOT MODIFY:
+ *   - Output format (TEST|, SUMMARY|, COVERAGE|)
+ *   - test() function signature
+ *   - Exit behaviour
+ *   - coverageTracker object
+ *   - Logging structure
+ *
+ * YOU MUST:
+ *   - Modify makeValidBook() to satisfy your schema rules
+ *   - Add sufficient tests to meet coverage requirements
+ */
 
-const BASE_URL = "http://localhost:3000/api/books";
+const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+const API_BASE = "/api/books";
 
-let total = 0;
-let passed = 0;
+// =============================
+// INTERNAL STATE (DO NOT MODIFY)
+// =============================
+
+const results = [];
 
 const coverageTracker = {
   CREATE_FAIL: 0,
@@ -15,225 +37,203 @@ const coverageTracker = {
   TEMPORAL: 0,
   UNKNOWN_CREATE: 0,
   UNKNOWN_UPDATE: 0,
-  IMMUTABLE: 0
+  IMMUTABLE: 0,
 };
 
-function log(testId, result, message, tag) {
-  total++;
+// =============================
+// OUTPUTS FORMAT (DO NOT MODIFY)
+// =============================
 
-  if(result){
-    passed++;
-    console.log(`TEST|${testId}|PASS|${tag}|${message}`);
-  } else {
-    console.log(`TEST|${testId}|FAIL|${tag}|${message}`);
-  }
-
-  if(tag && coverageTracker[tag] !== undefined){
-    coverageTracker[tag]++;
-  }
+function logHeader(uniqueId) {
+  console.log("SIT725_VALIDATION_TESTS");
+  console.log(`BASE_URL=${BASE_URL}`);
+  console.log(`API_BASE=${API_BASE}`);
+  console.log(`INFO|Generated uniqueId=${uniqueId}`);
 }
 
-function makeValidBook(id){
+function logResult(r) {
+  console.log(
+    `TEST|${r.id}|${r.name}|${r.method}|${r.path}|expected=${r.expected}|actual=${r.actual}|pass=${r.pass ? "Y" : "N"}`
+  );
+}
+
+function logSummary() {
+  const failed = results.filter(r => !r.pass).length;
+  console.log(
+    `SUMMARY|pass=${failed === 0 ? "Y" : "N"}|failed=${failed}|total=${results.length}`
+  );
+  return failed === 0;
+}
+
+function logCoverage() {
+  console.log(
+    `COVERAGE|CREATE_FAIL=${coverageTracker.CREATE_FAIL}` +
+    `|UPDATE_FAIL=${coverageTracker.UPDATE_FAIL}` +
+    `|TYPE=${coverageTracker.TYPE}` +
+    `|REQUIRED=${coverageTracker.REQUIRED}` +
+    `|BOUNDARY=${coverageTracker.BOUNDARY}` +
+    `|LENGTH=${coverageTracker.LENGTH}` +
+    `|TEMPORAL=${coverageTracker.TEMPORAL}` +
+    `|UNKNOWN_CREATE=${coverageTracker.UNKNOWN_CREATE}` +
+    `|UNKNOWN_UPDATE=${coverageTracker.UNKNOWN_UPDATE}` +
+    `|IMMUTABLE=${coverageTracker.IMMUTABLE}`
+  );
+}
+
+// =============================
+// HTTP HELPER
+// =============================
+
+async function http(method, path, body) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const text = await res.text();
+  return { status: res.status, text };
+}
+
+// =============================
+// TEST REGISTRATION FUNCTION
+// =============================
+
+async function test({ id, name, method, path, expected, body, tags }) {
+
+  const { status } = await http(method, path, body);
+  const pass = status === expected;
+
+  const result = { id, name, method, path, expected, actual: status, pass };
+  results.push(result);
+  logResult(result);
+
+  // treat missing or invalid tags as []
+  const safeTags = Array.isArray(tags) ? tags : [];
+
+  safeTags.forEach(tag => {
+    if (Object.prototype.hasOwnProperty.call(coverageTracker, tag)) {
+      coverageTracker[tag]++;
+    }
+  });
+}
+
+// =============================
+// STUDENT MUST MODIFY THESE
+// =============================
+
+function makeValidBook(id) {
   return {
-    id: id,
-    title: "Clean Code",
-    author: "Robert Martin",
-    year: 2008,
-    genre: "Programming",
-    summary: "Good book",
-    price: 10.5,
-    currency: "AUD"
+    id,
+    title: "Valid Title",
+    author: "Valid Author",
+    year: 2020,
+    genre: "Other",
+    summary: "Valid summary text that satisfies your rules.",
+    price: "9.99"
   };
 }
 
-function makeValidUpdate(){
+function makeValidUpdate() {
   return {
-    title: "Updated Book",
+    title: "Updated Title",
     author: "Updated Author",
-    year: 2010,
-    genre: "Technology",
-    summary: "Updated",
-    price: 20
+    year: 2021,
+    genre: "Other",
+    summary: "Updated summary text.",
+    price: "10.50"
   };
 }
 
+// =============================
+// REQUIRED BASE TESTS (DO NOT REMOVE)
+// =============================
 
-async function test(){
+async function run() {
 
-  const uniqueId = "B" + Date.now();
+  const uniqueId = `b${Date.now()}`;
+  logHeader(uniqueId);
 
-  // T01 Valid create
-  try {
-    let res = await fetch(BASE_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(makeValidBook(uniqueId))
-    });
+  const createPath = API_BASE;
+  const updatePath = (id) => `${API_BASE}/${id}`;
 
-    log("T01", res.status === 201, "Valid create", "CREATE_FAIL");
+  // ---- T01 Valid CREATE ----
+  await test({
+    id: "T01",
+    name: "Valid create",
+    method: "POST",
+    path: createPath,
+    expected: 201,
+    body: makeValidBook(uniqueId),
+    tags: []
+  });
 
-  } catch(e){
-    log("T01", false, e.message, "CREATE_FAIL");
-  }
+  // ---- T02 Duplicate ID ----
+  await test({
+    id: "T02",
+    name: "Duplicate ID",
+    method: "POST",
+    path: createPath,
+    expected: 409,
+    body: makeValidBook(uniqueId),
+    tags: ["CREATE_FAIL"]
+  });
 
-  // T02 Required field missing
-  try {
+  // ---- T03 Immutable ID ----
+  await test({
+    id: "T03",
+    name: "Immutable ID on update",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: { ...makeValidUpdate(), id: "b999" },
+    tags: ["UPDATE_FAIL", "IMMUTABLE"]
+  });
 
-    let book = makeValidBook("B2");
-    delete book.title;
+  // ---- T04 Unknown field CREATE ----
+  await test({
+    id: "T04",
+    name: "Unknown field CREATE",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { ...makeValidBook(`b${Date.now()+1}`), hack: true },
+    tags: ["CREATE_FAIL", "UNKNOWN_CREATE"]
+  });
 
-    let res = await fetch(BASE_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(book)
-    });
+  // ---- T05 Unknown field UPDATE ----
+  await test({
+    id: "T05",
+    name: "Unknown field UPDATE",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: { ...makeValidUpdate(), hack: true },
+    tags: ["UPDATE_FAIL", "UNKNOWN_UPDATE"]
+  });
 
-    log("T02", res.status === 400, "Missing title", "REQUIRED");
+  // =====================================
+  // STUDENTS MUST ADD ADDITIONAL TESTS
+  // =====================================
+  //
+  // Add tests covering:
+  // - REQUIRED
+  // - TYPE
+  // - BOUNDARY
+  // - LENGTH
+  // - TEMPORAL
+  // - UPDATE_FAIL
+  //
+  // Each test must include appropriate tags.
+  //
 
-  } catch(e){
-    log("T02", false, e.message, "REQUIRED");
-  }
+  const pass = logSummary();
+  logCoverage();
 
-  // T03 Type validation
-  try {
-
-    let book = makeValidBook("B3");
-    book.year = "abc";
-
-    let res = await fetch(BASE_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(book)
-    });
-
-    log("T03", res.status === 400, "Year type", "TYPE");
-
-  } catch(e){
-    log("T03", false, e.message, "TYPE");
-  }
-
-  // T04 Boundary test
-  try {
-
-    let book = makeValidBook("B4");
-    book.year = 1700;
-
-    let res = await fetch(BASE_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(book)
-    });
-
-    log("T04", res.status === 400, "Year boundary", "BOUNDARY");
-
-  } catch(e){
-    log("T04", false, e.message, "BOUNDARY");
-  }
-
-  // T05 Length validation
-  try {
-
-    let book = makeValidBook("B5");
-    book.title = "a";
-
-    let res = await fetch(BASE_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(book)
-    });
-
-    log("T05", res.status === 400, "Title length", "LENGTH");
-
-  } catch(e){
-    log("T05", false, e.message, "LENGTH");
-  }
-
-  // T06 Future year
-  try {
-
-    let book = makeValidBook("B6");
-    book.year = 3000;
-
-    let res = await fetch(BASE_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(book)
-    });
-
-    log("T06", res.status === 400, "Future year", "TEMPORAL");
-
-  } catch(e){
-    log("T06", false, e.message, "TEMPORAL");
-  }
-
-  // T07 Unknown field
-  try {
-
-    let book = makeValidBook("B7");
-    book.hack = "bad";
-
-    let res = await fetch(BASE_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(book)
-    });
-
-    log("T07", res.status === 400, "Unknown field", "UNKNOWN_CREATE");
-
-  } catch(e){
-    log("T07", false, e.message, "UNKNOWN_CREATE");
-  }
-
-  // T08 Update validation
-  try {
-
-    let res = await fetch(`${BASE_URL}/${uniqueId}`,{
-      method:"PUT",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({title:"a"})
-    });
-
-    log("T08", res.status === 400, "Update validation", "UPDATE_FAIL");
-
-  } catch(e){
-    log("T08", false, e.message, "UPDATE_FAIL");
-  }
-
-  // T09 Immutable id
-  try {
-
-    let res = await fetch(`${BASE_URL}/${uniqueId}`,{
-      method:"PUT",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({id:"NEW"})
-    });
-
-    log("T09", res.status === 400, "Immutable id", "IMMUTABLE");
-
-  } catch(e){
-    log("T09", false, e.message, "IMMUTABLE");
-  }
-
-  // T10 Unknown update
-  try {
-
-    let res = await fetch(`${BASE_URL}/${uniqueId}`,{
-      method:"PUT",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({hack:"bad"})
-    });
-
-    log("T10", res.status === 400, "Unknown update", "UNKNOWN_UPDATE");
-
-  } catch(e){
-    log("T10", false, e.message, "UNKNOWN_UPDATE");
-  }
-
-  console.log(`SUMMARY|Passed:${passed}|Failed:${total-passed}|Total:${total}`);
-  console.log(`COVERAGE|${JSON.stringify(coverageTracker)}`);
-
-  process.exit(total === passed ? 0 : 1);
-
+  process.exit(pass ? 0 : 1);
 }
 
-test();
+run().catch(err => {
+  console.error("ERROR", err);
+  process.exit(2);
+});
