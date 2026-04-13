@@ -1,0 +1,93 @@
+body {
+    background: #f5f7fa;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.main-body {
+    margin-top: 40px;
+}
+
+/* Book Card */
+
+.book-list-card {
+    border-radius: 12px;
+    transition: 0.3s ease;
+}
+
+.book-list-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Price */
+
+.price {
+    font-weight: bold;
+    color: #00796b;
+}
+
+/* Card Title */
+
+.card-title {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Card Actions */
+
+.card-action {
+    display: flex;
+    gap: 10px;
+}
+
+/* Footer */
+
+.github-footer {
+    background: #263238;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+.github-footer h6 {
+    font-weight: 600;
+}
+
+.github-btn {
+    background: #24292e;
+}
+
+.github-btn:hover {
+    background: #000;
+}
+
+/* Buttons */
+
+.btn-small {
+    margin-right: 5px;
+}
+
+/* Modal */
+
+.modal {
+    max-width: 500px;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+
+    .card-action {
+        flex-direction: column;
+    }
+
+    .btn-small {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+}
