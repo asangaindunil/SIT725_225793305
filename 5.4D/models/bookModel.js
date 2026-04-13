@@ -87,6 +87,7 @@ const bookSchema = new mongoose.Schema({
         virtuals: false,
         transform(_doc, ret) {
             delete ret.__v;
+            delete ret._id;
             return ret;
         }
     },
