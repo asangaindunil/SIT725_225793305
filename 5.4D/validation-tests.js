@@ -212,20 +212,193 @@ async function run() {
     tags: ["UPDATE_FAIL", "UNKNOWN_UPDATE"]
   });
 
-  // =====================================
-  // STUDENTS MUST ADD ADDITIONAL TESTS
-  // =====================================
-  //
-  // Add tests covering:
-  // - REQUIRED
-  // - TYPE
-  // - BOUNDARY
-  // - LENGTH
-  // - TEMPORAL
-  // - UPDATE_FAIL
-  //
-  // Each test must include appropriate tags.
-  //
+  // =============================
+  // ADDITIONAL TESTS
+  // =============================
+
+  // T06 Required field missing
+  const missingTitle = makeValidBook(`b${Date.now()+2}`);
+  delete missingTitle.title;
+
+  await test({
+    id: "T06",
+    name: "Missing required title",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: missingTitle,
+    tags: ["CREATE_FAIL", "REQUIRED"]
+  });
+
+  // T07 Type validation
+  await test({
+    id: "T07",
+    name: "Invalid year type",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { ...makeValidBook(`b${Date.now()+3}`), year: "abc" },
+    tags: ["CREATE_FAIL", "TYPE"]
+  });
+
+  // T08 Boundary validation
+  await test({
+    id: "T08",
+    name: "Year below boundary",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { ...makeValidBook(`b${Date.now()+4}`), year: 1700 },
+    tags: ["CREATE_FAIL", "BOUNDARY"]
+  });
+
+  // T09 Length validation
+  await test({
+    id: "T09",
+    name: "Short title",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { ...makeValidBook(`b${Date.now()+5}`), title: "A" },
+    tags: ["CREATE_FAIL", "LENGTH"]
+  });
+
+  // T10 Temporal validation
+  await test({
+    id: "T10",
+    name: "Future year",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { ...makeValidBook(`b${Date.now()+6}`), year: 3000 },
+    tags: ["CREATE_FAIL", "TEMPORAL"]
+  });
+
+  // T11 Update validation
+  await test({
+    id: "T11",
+    name: "Update invalid",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: { ...makeValidUpdate(), title: "A" },
+    tags: ["UPDATE_FAIL", "LENGTH"]
+  });
+
+  await test({
+    id: "T12",
+    name: "Update missing author",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: { ...makeValidUpdate(), author: "" },
+    tags: ["UPDATE_FAIL", "REQUIRED"]
+  });
+
+  await test({
+    id: "T13",
+    name: "Update invalid year",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: { ...makeValidUpdate(), year: 1700 },
+    tags: ["UPDATE_FAIL", "BOUNDARY"]
+  });
+
+    // T14 Price type validation
+  await test({
+    id: "T14",
+    name: "Invalid price type",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { ...makeValidBook(`b${Date.now()+7}`), price: "abc" },
+    tags: ["CREATE_FAIL", "TYPE"]
+  });
+
+  // T15 Price boundary validation
+  await test({
+    id: "T15",
+    name: "Negative price",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { ...makeValidBook(`b${Date.now()+8}`), price: -5 },
+    tags: ["CREATE_FAIL", "BOUNDARY"]
+  });
+
+  // T16 Genre required
+  const missingGenre = makeValidBook(`b${Date.now()+9}`);
+  delete missingGenre.genre;
+
+  await test({
+    id: "T16",
+    name: "Missing genre",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: missingGenre,
+    tags: ["CREATE_FAIL", "REQUIRED"]
+  });
+
+  // T17 Author length
+  await test({
+    id: "T17",
+    name: "Author too short",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { ...makeValidBook(`b${Date.now()+10}`), author: "A" },
+    tags: ["CREATE_FAIL", "LENGTH"]
+  });
+
+  // T18 Summary length
+  await test({
+    id: "T18",
+    name: "Summary too long",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: { 
+      ...makeValidBook(`b${Date.now()+11}`), 
+      summary: "A".repeat(600) 
+    },
+    tags: ["CREATE_FAIL", "LENGTH"]
+  });
+
+  // T19 Update type validation
+  await test({
+    id: "T19",
+    name: "Update invalid year type",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: { ...makeValidUpdate(), year: "bad" },
+    tags: ["UPDATE_FAIL", "TYPE"]
+  });
+
+  // T20 Update temporal validation
+  await test({
+    id: "T20",
+    name: "Update future year",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: { ...makeValidUpdate(), year: 3000 },
+    tags: ["UPDATE_FAIL", "TEMPORAL"]
+  });
+
+  // T21 Update price boundary
+  await test({
+    id: "T21",
+    name: "Update negative price",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: { ...makeValidUpdate(), price: -10 },
+    tags: ["UPDATE_FAIL", "BOUNDARY"]
+  });
+  
 
   const pass = logSummary();
   logCoverage();

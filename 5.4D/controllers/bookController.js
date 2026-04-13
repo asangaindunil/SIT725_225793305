@@ -63,6 +63,13 @@ exports.createBook = async (req, res) => {
       });
     }
 
+    // Cast error
+    if (error.name === 'CastError') {
+    return res.status(400).json({
+      message: error.message
+    });
+  }
+
     // Unknown field (strict throw)
     if (error.name === 'StrictModeError') {
       return res.status(400).json({
@@ -107,6 +114,12 @@ exports.updateBookById = async (req, res) => {
         message: errors.join(", ")
       });
     }
+    
+    if (error.name === 'CastError') {
+    return res.status(400).json({
+      message: error.message
+    });
+  }
 
     if (error.name === 'StrictModeError') {
       return res.status(400).json({
