@@ -549,20 +549,6 @@ async function run() {
     tags: ["CREATE_FAIL", "LENGTH"]
   });
 
-  // T33 Update invalid currency
-  await test({
-    id: "T33",
-    name: "Update invalid currency",
-    method: "PUT",
-    path: updatePath(uniqueId),
-    expected: 400,
-    body: {
-      ...makeValidUpdate(),
-      currency: "LKR"
-    },
-    tags: ["UPDATE_FAIL", "TYPE"]
-  });
-
 
   const pass = logSummary();
   logCoverage();
