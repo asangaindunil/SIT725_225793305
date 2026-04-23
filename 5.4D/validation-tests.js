@@ -493,6 +493,77 @@ async function run() {
     tags: ["CREATE_FAIL", "REQUIRED"],
   });
 
+  // T29 Missing price
+  const missingPrice = makeValidBook(`b${Date.now()+21}`);
+  delete missingPrice.price;
+
+  await test({
+    id: "T29",
+    name: "Missing price",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: missingPrice,
+    tags: ["CREATE_FAIL", "REQUIRED"]
+  });
+
+  //T30 Author too long
+  await test({
+    id: "T30",
+    name: "Author too long",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: {
+      ...makeValidBook(`b${Date.now()+18}`),
+      author: "A".repeat(60)
+    },
+    tags: ["CREATE_FAIL", "LENGTH"]
+  });
+
+  //T31 Genre too short
+  await test({
+    id: "T31",
+    name: "Genre too short",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: {
+      ...makeValidBook(`b${Date.now()+19}`),
+      genre: "AB"
+    },
+    tags: ["CREATE_FAIL", "LENGTH"]
+  });
+
+  //T32 Genre too long
+  await test({
+    id: "T32",
+    name: "Genre too long",
+    method: "POST",
+    path: createPath,
+    expected: 400,
+    body: {
+      ...makeValidBook(`b${Date.now()+20}`),
+      genre: "A".repeat(50)
+    },
+    tags: ["CREATE_FAIL", "LENGTH"]
+  });
+
+  // T33 Update invalid currency
+  await test({
+    id: "T33",
+    name: "Update invalid currency",
+    method: "PUT",
+    path: updatePath(uniqueId),
+    expected: 400,
+    body: {
+      ...makeValidUpdate(),
+      currency: "LKR"
+    },
+    tags: ["UPDATE_FAIL", "TYPE"]
+  });
+
+
   const pass = logSummary();
   logCoverage();
 
