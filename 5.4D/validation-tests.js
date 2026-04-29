@@ -346,7 +346,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 10}`), author: "A" },
+    body: { ...makeValidBook(uniqueId), author: "A" },
     tags: ["CREATE_FAIL", "LENGTH"],
   });
 
@@ -358,7 +358,7 @@ async function run() {
     path: createPath,
     expected: 400,
     body: {
-      ...makeValidBook(`b${Date.now() + 11}`),
+      ...makeValidBook(uniqueId),
       summary: "A".repeat(600),
     },
     tags: ["CREATE_FAIL", "LENGTH"],
@@ -393,7 +393,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 17}`), title: "A".repeat(150) },
+    body: { ...makeValidBook(uniqueId), title: "A".repeat(150) },
     tags: ["CREATE_FAIL", "LENGTH"],
   });
 
@@ -405,7 +405,7 @@ async function run() {
     path: createPath,
     expected: 400,
     body: {
-      ...makeValidBook(`b${Date.now() + 12}`),
+      ...makeValidBook(uniqueId),
       currency: "LKR",
     },
     tags: ["CREATE_FAIL", "TYPE"],
@@ -445,7 +445,7 @@ async function run() {
     path: createPath,
     expected: 400,
     body: {
-      ...makeValidBook(`b${Date.now() + 13}`),
+      ...makeValidBook(uniqueId),
       price: 0,
     },
     tags: ["CREATE_FAIL", "BOUNDARY"],
@@ -494,7 +494,7 @@ async function run() {
   });
 
   // T29 Missing price
-  const missingPrice = makeValidBook(`b${Date.now()+21}`);
+  const missingPrice = makeValidBook(uniqueId);
   delete missingPrice.price;
 
   await test({
@@ -515,7 +515,7 @@ async function run() {
     path: createPath,
     expected: 400,
     body: {
-      ...makeValidBook(`b${Date.now()+18}`),
+      ...makeValidBook(uniqueId),
       author: "A".repeat(60)
     },
     tags: ["CREATE_FAIL", "LENGTH"]
@@ -529,7 +529,7 @@ async function run() {
     path: createPath,
     expected: 400,
     body: {
-      ...makeValidBook(`b${Date.now()+19}`),
+      ...makeValidBook(uniqueId),
       genre: "AB"
     },
     tags: ["CREATE_FAIL", "LENGTH"]
@@ -543,7 +543,7 @@ async function run() {
     path: createPath,
     expected: 400,
     body: {
-      ...makeValidBook(`b${Date.now()+20}`),
+      ...makeValidBook(uniqueId),
       genre: "A".repeat(50)
     },
     tags: ["CREATE_FAIL", "LENGTH"]
