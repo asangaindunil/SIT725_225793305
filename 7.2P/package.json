@@ -1,0 +1,17 @@
+{
+  "name": "7.2p",
+  "version": "1.0.0",
+  "description": "my socket.io app for sit725",
+  "license": "ISC",
+  "author": "Asanga Indunil",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha --exit"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}

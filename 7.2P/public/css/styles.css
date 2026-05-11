@@ -1,0 +1,45 @@
+body {
+    background: #f4f4f4;
+}
+
+.main-body {
+    margin-top: 50px;
+}
+
+/* Make all cards equal height */
+.vote-card {
+    border-radius: 15px;
+    padding: 20px;
+    height: 450px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fixed image size */
+.profile-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.vote-card h3 {
+    color: teal;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.github-footer {
+    background: #263238;
+    padding: 20px 0;
+    margin-top: 50px;
+}
+
+.github-btn {
+    background: #24292e;
+}
+
+.github-btn:hover {
+    background: black;
+}

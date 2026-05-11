@@ -195,7 +195,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 1}`), hack: true },
+    body: { ...makeValidBook(uniqueId), hack: true },
     tags: ["CREATE_FAIL", "UNKNOWN_CREATE"],
   });
 
@@ -235,7 +235,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 3}`), year: "abc" },
+    body: { ...makeValidBook(uniqueId), year: "abc" },
     tags: ["CREATE_FAIL", "TYPE"],
   });
 
@@ -246,7 +246,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 4}`), year: 1700 },
+    body: { ...makeValidBook(uniqueId), year: 1700 },
     tags: ["CREATE_FAIL", "BOUNDARY"],
   });
 
@@ -257,7 +257,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 5}`), title: "A" },
+    body: { ...makeValidBook(uniqueId), title: "A" },
     tags: ["CREATE_FAIL", "LENGTH"],
   });
 
@@ -268,7 +268,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 6}`), year: 3000 },
+    body: { ...makeValidBook(uniqueId), year: 3000 },
     tags: ["CREATE_FAIL", "TEMPORAL"],
   });
 
@@ -310,7 +310,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 7}`), price: "abc" },
+    body: { ...makeValidBook(uniqueId), price: "abc" },
     tags: ["CREATE_FAIL", "TYPE"],
   });
 
@@ -321,7 +321,7 @@ async function run() {
     method: "POST",
     path: createPath,
     expected: 400,
-    body: { ...makeValidBook(`b${Date.now() + 8}`), price: -5 },
+    body: { ...makeValidBook(uniqueId), price: -5 },
     tags: ["CREATE_FAIL", "BOUNDARY"],
   });
 
@@ -494,7 +494,7 @@ async function run() {
   });
 
   // T29 Missing price
-  const missingPrice = makeValidBook(uniqueId);
+  const missingPrice =  makeValidBook(`b${Date.now() + 17}`);
   delete missingPrice.price;
 
   await test({

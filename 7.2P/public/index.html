@@ -1,0 +1,143 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Realtime Voting System</title>
+
+  <!-- Materialize CSS -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Socket.IO -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="nav-wrapper teal">
+      <a href="#" class="brand-logo center">
+        Live Voting System
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main-body">
+    <div class="container">
+
+      <div class="row">
+
+        <!-- Person 1 -->
+        <div class="col s12 m4">
+          <div class="card vote-card center-align">
+            <div class="card-content">
+
+              <img src="./images/1.jpg"
+                class="circle responsive-img profile-img">
+
+              <span class="card-title">John</span>
+
+              <h3 id="vote-john">0</h3>
+
+              <a class="waves-effect waves-light btn teal"
+                onclick="vote('john')">
+                <i class="material-icons left">thumb_up</i>
+                Vote
+              </a>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Person 2 -->
+        <div class="col s12 m4">
+          <div class="card vote-card center-align">
+            <div class="card-content">
+
+              <img src="./images/3.jpg"
+                class="circle responsive-img profile-img">
+
+              <span class="card-title">Emma</span>
+
+              <h3 id="vote-emma">0</h3>
+
+              <a class="waves-effect waves-light btn blue"
+                onclick="vote('emma')">
+                <i class="material-icons left">thumb_up</i>
+                Vote
+              </a>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Person 3 -->
+        <div class="col s12 m4">
+          <div class="card vote-card center-align">
+            <div class="card-content">
+
+              <img src="./images/2.jpg"
+                class="circle responsive-img profile-img">
+
+              <span class="card-title">Michael</span>
+
+              <h3 id="vote-michael">0</h3>
+
+              <a class="waves-effect waves-light btn orange"
+                onclick="vote('michael')">
+                <i class="material-icons left">thumb_up</i>
+                Vote
+              </a>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="page-footer github-footer">
+    <div class="container">
+      <div class="row valign-wrapper">
+
+        <div class="col s12 m8">
+          <h6>Realtime Voting using Socket.IO</h6>
+        </div>
+
+        <div class="col s12 m4 right-align">
+          <a href="https://github.com/asangaindunil"
+            target="_blank"
+            class="waves-effect waves-light btn github-btn">
+            <i class="material-icons left">code</i>
+            GitHub
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <script src="js/scripts.js"></script>
+
+</body>
+
+</html>
