@@ -16,10 +16,8 @@ A full-stack university social platform built with Node.js, Express, MongoDB, an
 ## Run the Application
 
 ```bash
-git clone <repo-url>
-cd uni-connect-dockerization
 
-docker-compose up --build
+docker-compose up
 ```
 
 Application runs at:
@@ -63,21 +61,6 @@ GET /health
 Email: alex.johnson@deakin.edu.au
 Password: password123
 ```
-
----
-
-# Environment Variables
-
-Copy `.env.example` to `.env` if needed.
-
-Example:
-
-```env
-PORT=3000
-JWT_SECRET=your_secret
-```
-
-MongoDB connection is automatically configured through Docker Compose.
 
 ---
 
