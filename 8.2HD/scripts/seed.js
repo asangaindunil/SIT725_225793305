@@ -11,9 +11,15 @@ const seedData = [
 
 async function seed() {
   await mongoose.connect(MONGO_URI);
-  console.log('Connected to MongoDB');
 
-  await SampleModel.deleteMany({});
+  const existing = await SampleModel.countDocuments();
+  if (existing > 0) {
+    console.log('Samples already seeded — skipping.');
+    await mongoose.connection.close();
+    return;
+  }
+
+  console.log('Connected to MongoDB');
   const inserted = await SampleModel.insertMany(seedData);
   console.log(`Seeded ${inserted.length} records`);
 

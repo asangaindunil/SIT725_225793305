@@ -64,7 +64,10 @@ async function fetchJSON(url, options = {}) {
     return;
   }
 
-  if (!res.ok) throw new Error(`${res.status} from ${url}`);
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || `${res.status} from ${url}`);
+  }
   return res.json();
 }
 
@@ -226,7 +229,7 @@ function renderTracker(data) {
             </div>
             <div class="tracker-item-actions">
               <span class="tracker-item-time">${upcoming ? daysUntil(e.date) : 'Done'}</span>
-              ${editBtn}
+              ${e.isCreator && upcoming ? editBtn : ''}
               <button class="tracker-action-btn red-text" onclick="deleteEvent('${e._id}', ${e.isCreator})" title="${deleteLabel}">
                 <i class="material-icons tiny">delete</i>
               </button>
@@ -421,8 +424,8 @@ async function submitEditEvent() {
     M.toast({ html: 'Event updated — pending re-approval', classes: 'teal darken-1' });
     const trackerData = await fetchJSON('/api/dashboard/tracker');
     if (trackerData) renderTracker(trackerData);
-  } catch {
-    M.toast({ html: 'Failed to update event', classes: 'red darken-1' });
+  } catch (err) {
+    M.toast({ html: err.message || 'Failed to update event', classes: 'red darken-1' });
   }
 }
 
@@ -458,6 +461,10 @@ function connectSocket() {
 // Init 
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const todayLocal = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 16);
+  document.getElementById('ce-date').min = todayLocal;
+
   M.Sidenav.init(document.querySelectorAll('.sidenav'));
   M.Tabs.init(document.getElementById('feed-tabs-el'));
   M.Tabs.init(document.getElementById('tracker-tabs-el'));
@@ -484,6 +491,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     connectSocket();
   } catch (err) {
+    // 404 means student profile not found — JWT is stale (re-seed invalidated IDs).
+    // Auto-logout so the user gets a fresh token after logging back in.
+    if (err.message && err.message.startsWith('404')) {
+      logout();
+      return;
+    }
     const banner = document.getElementById('error-banner');
     banner.style.display = 'flex';
     console.error('Dashboard load error:', err);

@@ -12,7 +12,15 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/uni-connec
 
 async function seed() {
   await mongoose.connect(MONGO_URI);
-  console.log('Connected. Clearing existing data...');
+
+  const existing = await User.countDocuments();
+  if (existing > 0) {
+    console.log('Database already seeded — skipping.');
+    await mongoose.connection.close();
+    return;
+  }
+
+  console.log('Connected. Seeding data...');
 
   await Promise.all([
     User.deleteMany({}),

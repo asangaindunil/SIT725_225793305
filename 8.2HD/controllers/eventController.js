@@ -43,6 +43,10 @@ exports.createStudentEvent = async (req, res) => {
       return res.status(400).json({ error: 'Title and date are required' });
     }
 
+    if (new Date(date) < new Date()) {
+      return res.status(400).json({ error: 'Event date cannot be in the past' });
+    }
+
     const event = await eventService.createEvent({
       title, description, type, organizer,
       date, location,

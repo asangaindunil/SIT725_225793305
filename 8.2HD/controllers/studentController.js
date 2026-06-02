@@ -1,6 +1,7 @@
 const Resource = require('../models/resourceModel');
 const ForumPost = require('../models/forumPostModel');
 const Event = require('../models/eventModel');
+const Student = require('../models/studentModel');
 
 // DELETE /api/student/resources/:id
 exports.deleteResource = async (req, res) => {
@@ -8,7 +9,10 @@ exports.deleteResource = async (req, res) => {
     const { studentId } = req.user;
     if (!studentId) return res.status(403).json({ error: 'Student profile not found' });
 
-    const resource = await Resource.findOneAndDelete({ _id: req.params.id, uploadedBy: studentId });
+    const student = await Student.findById(studentId).select('name').lean();
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    const resource = await Resource.findOneAndDelete({ _id: req.params.id, uploader: student.name });
     if (!resource) return res.status(404).json({ error: 'Resource not found or not authorized' });
     res.json({ message: 'Resource deleted' });
   } catch (err) {
@@ -67,6 +71,10 @@ exports.updateEvent = async (req, res) => {
 
     if (!event.createdBy || event.createdBy.toString() !== studentId.toString()) {
       return res.status(403).json({ error: 'Not authorized to edit this event' });
+    }
+
+    if (new Date(event.date) < new Date()) {
+      return res.status(400).json({ error: 'Cannot edit a past event' });
     }
 
     const { title, description, date, location, type, isOnline, tags, unitCodes } = req.body;
