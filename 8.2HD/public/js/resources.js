@@ -50,15 +50,13 @@ const TYPE_ICONS = {
 async function fetchResources() {
   try {
     const response = await fetch('/api/resources');
-
+    if (!response.ok) throw new Error(`Failed to load resources (${response.status})`);
     const result = await response.json();
-
     resources = result.data;
-
     render();
-
   } catch (err) {
     console.error('Error fetching resources:', err);
+    M.toast({ html: err.message || 'Failed to load resources', classes: 'red darken-1' });
   }
 }
 

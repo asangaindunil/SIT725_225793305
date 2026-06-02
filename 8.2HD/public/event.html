@@ -297,6 +297,7 @@
     try {
 
       const response = await fetch('/api/events/pending');
+      if (!response.ok) throw new Error(`Failed to load events (${response.status})`);
       const events = await response.json();
 
       eventsGrid.innerHTML = '';
@@ -386,7 +387,11 @@
     initFilterButtons();
 
     } catch (error) {
-    console.error('Failed to load events:', error);
+      console.error('Failed to load events:', error);
+      eventsGrid.innerHTML = `
+        <div class="card-panel red lighten-4" style="grid-column:1/-1">
+          ${error.message || 'Failed to load events. Please try again.'}
+        </div>`;
     }
     }
 

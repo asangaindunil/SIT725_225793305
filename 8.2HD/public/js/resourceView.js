@@ -10,6 +10,8 @@ async function fetchResource() {
     const response =
       await fetch(`/api/resources/${id}`);
 
+    if (!response.ok) throw new Error(`Failed to load resource (${response.status})`);
+
     const result = await response.json();
 
     const resource = result.data;
@@ -23,7 +25,7 @@ async function fetchResource() {
     document.getElementById('resource-container')
       .innerHTML = `
         <div class="card-panel red lighten-4">
-          Failed to load resource.
+          ${err.message || 'Failed to load resource.'}
         </div>
       `;
   }

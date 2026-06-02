@@ -261,21 +261,29 @@ function renderTracker(data) {
 
 async function markRead(notifId, el) {
   if (!el.classList.contains('unread')) return;
-  await fetchJSON(`/api/dashboard/notifications/${notifId}/read`, { method: 'PUT' });
-  el.classList.remove('unread');
-  el.querySelector('.notif-unread-dot')?.remove();
-  currentUnreadCount = Math.max(0, currentUnreadCount - 1);
-  updateNotifBadge(currentUnreadCount);
+  try {
+    await fetchJSON(`/api/dashboard/notifications/${notifId}/read`, { method: 'PUT' });
+    el.classList.remove('unread');
+    el.querySelector('.notif-unread-dot')?.remove();
+    currentUnreadCount = Math.max(0, currentUnreadCount - 1);
+    updateNotifBadge(currentUnreadCount);
+  } catch {
+    M.toast({ html: 'Failed to mark notification as read', classes: 'red darken-1' });
+  }
 }
 
 async function markAllRead() {
-  await fetchJSON('/api/dashboard/notifications/read-all', { method: 'PUT' });
-  document.querySelectorAll('.notif-item.unread').forEach(el => {
-    el.classList.remove('unread');
-    el.querySelector('.notif-unread-dot')?.remove();
-  });
-  currentUnreadCount = 0;
-  updateNotifBadge(0);
+  try {
+    await fetchJSON('/api/dashboard/notifications/read-all', { method: 'PUT' });
+    document.querySelectorAll('.notif-item.unread').forEach(el => {
+      el.classList.remove('unread');
+      el.querySelector('.notif-unread-dot')?.remove();
+    });
+    currentUnreadCount = 0;
+    updateNotifBadge(0);
+  } catch {
+    M.toast({ html: 'Failed to mark all notifications as read', classes: 'red darken-1' });
+  }
 }
 
 // Student item actions
@@ -447,9 +455,9 @@ function connectSocket() {
     try {
       const data = await fetchJSON('/api/dashboard/notifications');
       renderNotifications(data.notifications, data.unreadCount);
-    } catch { 
-      console.error('Failed to refresh notifications after socket update');
-     }
+    } catch {
+      M.toast({ html: 'Failed to refresh notifications', classes: 'red darken-1' });
+    }
   });
 
   socket.on('disconnect', () => {
