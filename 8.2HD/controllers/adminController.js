@@ -1,6 +1,18 @@
 const adminService = require('../services/adminService');
 
-// Control function for blocking a user
+// GET /api/admin/users
+// Returns all users for the All Users panel (no passwords)
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await adminService.getUsers();
+    res.json(users);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// PUT /api/admin/block-user/:userId
+// Body: { duration, reason?, reviewId? }
 exports.blockUser = async (req, res, next) => {
   try {
     const { duration, reason, reviewId } = req.body;
@@ -9,11 +21,13 @@ exports.blockUser = async (req, res, next) => {
     const user = await adminService.blockUser(req.params.userId, { duration, reason, reviewId });
     res.json({ message: 'User blocked successfully', user });
   } catch (err) {
+    if (err.message === 'User not found') return res.status(404).json({ error: 'User not found' });
+    if (err.name === 'CastError') return res.status(400).json({ error: 'Invalid user id format' });
     next(err);
   }
 };
 
-// Control function for unblocking a user
+// PUT /api/admin/unblock-user/:userId
 exports.unblockUser = async (req, res, next) => {
   try {
     const user = await adminService.unblockUser(req.params.userId);
@@ -24,7 +38,7 @@ exports.unblockUser = async (req, res, next) => {
   }
 };
 
-// Control function for fetching all blocked users
+// GET /api/admin/blocked-users
 exports.getBlockedUsers = async (req, res, next) => {
   try {
     const users = await adminService.getBlockedUsers();
